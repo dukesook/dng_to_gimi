@@ -54,5 +54,9 @@ int main(int argc, char *argv[]) {
 
   cout << "First pixel value: " << rawData[0] << endl;
 
+  if (rawData) {
+    delete[] rawData; // Free the copied data
+  }
+
   return 0;
 }
