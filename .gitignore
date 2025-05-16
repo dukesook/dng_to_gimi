@@ -1,4 +1,6 @@
 build/
+temp/
+out/
 
 # Prerequisites
 *.d

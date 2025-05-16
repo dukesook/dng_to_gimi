@@ -116,6 +116,9 @@ static void write_to_heif(uint8_t *rgbData, int width, int height, string output
 
   he(heif_context_get_encoder_for_format(ctx, compression, &encoder));
   he(heif_context_encode_image(ctx, img, encoder, nullptr, &handle));
+
+  heif_context_add_compatible_brand(ctx, 'geo1');
+
   he(heif_context_write_to_file(ctx, output_filename.c_str()));
   printf("Created: %s\n", output_filename.c_str());
 }
@@ -135,7 +138,7 @@ int main(int argc, char *argv[]) {
   // }
   uint8_t *rgbData = get_rgb_image(filename, width, height, channels);
 
-  write_to_heif(rgbData, width, height, "output.heif");
+  write_to_heif(rgbData, width, height, "geo1_brand.heif");
 
   // if (rawData) {
   //   delete[] rawData; // Free the copied data
