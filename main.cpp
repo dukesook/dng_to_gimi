@@ -1,5 +1,6 @@
 #include <iostream>
 #include <libheif/heif.h> // built from source
+#include <libheif/heif_experimental.h>
 #include <libheif/heif_properties.h>
 #include <libraw/libraw.h> // sudo apt install libraw-dev
 
@@ -111,8 +112,7 @@ static void gimify(heif_context *ctx, heif_item_id primary_id) {
   const char *content_id = generate_content_id();
 
   // Content Id
-
-  heif_item_add_raw_property(
+  he(heif_item_add_raw_property(
       ctx,
       primary_id,
       'uuid',
@@ -120,16 +120,10 @@ static void gimify(heif_context *ctx, heif_item_id primary_id) {
       (const uint8_t *)content_id,
       strlen(content_id),
       0, // is_essential - not essential for viewing
-      nullptr);
-  /*
-  struct heif_error heif_item_add_raw_property(const struct heif_context* context,
-                                             heif_item_id itemId,
-                                             uint32_t fourcc_type,
-                                             const uint8_t* uuid_type,
-                                             const uint8_t* data, size_t size,
-                                             int is_essential,
-                                             heif_property_id* out_propertyId);
-  */
+      nullptr));
+
+  // Timestamp
+  // TODO
 }
 
 static void write_to_heif(uint8_t *rgbData, int width, int height, string output_filename) {
