@@ -1,7 +1,8 @@
 #include <iostream>
 #include <libheif/heif.h> // built from source
-#include <libheif/heif_experimental.h>
+// #include <libheif/heif_experimental.h>
 #include <libheif/heif_properties.h>
+#include <libheif/heif_tai_timestamps.h>
 #include <libraw/libraw.h> // sudo apt install libraw-dev
 
 using namespace std;
@@ -123,7 +124,14 @@ static void gimify(heif_context *ctx, heif_item_id primary_id) {
       nullptr));
 
   // Timestamp
-  // TODO
+  heif_tai_clock_info *clock = heif_tai_clock_info_alloc();
+  heif_tai_timestamp_packet *timestamp = heif_tai_timestamp_packet_alloc();
+
+  heif_item_set_property_tai_clock_info(ctx, primary_id, clock, nullptr);
+  heif_item_set_property_tai_timestamp(ctx, primary_id, timestamp, nullptr);
+
+  heif_tai_clock_info_release(clock);
+  heif_tai_timestamp_packet_release(timestamp);
 }
 
 static void write_to_heif(uint8_t *rgbData, int width, int height, string output_filename) {
@@ -161,7 +169,7 @@ int main(int argc, char *argv[]) {
   print_versions();
 
   const char *input_filename = "baseball.dng";
-  const char *output_filename = "out/content_id.heif";
+  const char *output_filename = "out/timestamp.heif";
   int width, height, channels;
   string colorFilterPattern;
   // ushort *rawData = get_dng_data(filename, width, height, colorFilterPattern);
