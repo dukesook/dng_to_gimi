@@ -1,5 +1,6 @@
 #include <iostream>
-#include <libheif/heif.h>  // sudo apt install libheif-dev
+#include <libheif/heif.h> // built from source
+#include <libheif/heif_properties.h>
 #include <libraw/libraw.h> // sudo apt install libraw-dev
 
 using namespace std;
@@ -94,6 +95,43 @@ static void he(struct heif_error error) {
   }
 }
 
+static const char *generate_content_id() {
+  // Generate a random UUID
+  static char uuid[37];
+  snprintf(uuid, sizeof(uuid), "urn:uuid:%08x-%04x-%04x-%04x-%012x",
+           rand(), rand() % 0xFFFF, rand() % 0xFFFF, rand() % 0xFFFF, rand());
+  return uuid;
+}
+
+static void gimify(heif_context *ctx, heif_item_id primary_id) {
+  // Brand
+  heif_context_add_compatible_brand(ctx, 'geo1');
+
+  const char *extended_type_content_id = "0x261ef3741d975bbaacbd9d2c8ea73522";
+  const char *content_id = generate_content_id();
+
+  // Content Id
+
+  heif_item_add_raw_property(
+      ctx,
+      primary_id,
+      'uuid',
+      (const uint8_t *)extended_type_content_id,
+      (const uint8_t *)content_id,
+      strlen(content_id),
+      0, // is_essential - not essential for viewing
+      nullptr);
+  /*
+  struct heif_error heif_item_add_raw_property(const struct heif_context* context,
+                                             heif_item_id itemId,
+                                             uint32_t fourcc_type,
+                                             const uint8_t* uuid_type,
+                                             const uint8_t* data, size_t size,
+                                             int is_essential,
+                                             heif_property_id* out_propertyId);
+  */
+}
+
 static void write_to_heif(uint8_t *rgbData, int width, int height, string output_filename) {
   heif_context *ctx = heif_context_alloc();
   heif_compression_format compression = heif_compression_HEVC;
@@ -117,7 +155,8 @@ static void write_to_heif(uint8_t *rgbData, int width, int height, string output
   he(heif_context_get_encoder_for_format(ctx, compression, &encoder));
   he(heif_context_encode_image(ctx, img, encoder, nullptr, &handle));
 
-  heif_context_add_compatible_brand(ctx, 'geo1');
+  heif_item_id primary_id = heif_image_handle_get_item_id(handle);
+  gimify(ctx, primary_id);
 
   he(heif_context_write_to_file(ctx, output_filename.c_str()));
   printf("Created: %s\n", output_filename.c_str());
@@ -127,7 +166,8 @@ int main(int argc, char *argv[]) {
 
   print_versions();
 
-  const char *filename = "baseball.dng";
+  const char *input_filename = "baseball.dng";
+  const char *output_filename = "out/content_id.heif";
   int width, height, channels;
   string colorFilterPattern;
   // ushort *rawData = get_dng_data(filename, width, height, colorFilterPattern);
@@ -136,9 +176,9 @@ int main(int argc, char *argv[]) {
   //   cerr << "Failed to get DNG data." << endl;
   //   return 1;
   // }
-  uint8_t *rgbData = get_rgb_image(filename, width, height, channels);
+  uint8_t *rgbData = get_rgb_image(input_filename, width, height, channels);
 
-  write_to_heif(rgbData, width, height, "geo1_brand.heif");
+  write_to_heif(rgbData, width, height, output_filename);
 
   // if (rawData) {
   //   delete[] rawData; // Free the copied data
