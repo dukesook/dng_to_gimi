@@ -108,6 +108,7 @@ static const char *generate_content_id() {
 static void gimify(heif_context *ctx, heif_item_id primary_id) {
   // Brand
   heif_context_add_compatible_brand(ctx, 'geo1');
+  heif_context_add_compatible_brand(ctx, 'unif');
 
   const char *extended_type_content_id = "0x261ef3741d975bbaacbd9d2c8ea73522";
   const char *content_id = generate_content_id();
