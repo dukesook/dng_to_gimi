@@ -110,7 +110,10 @@ static void gimify(heif_context *ctx, heif_item_id primary_id) {
   heif_context_add_compatible_brand(ctx, 'geo1');
   heif_context_add_compatible_brand(ctx, 'unif');
 
-  const char *extended_type_content_id = "0x261ef3741d975bbaacbd9d2c8ea73522";
+  // const char *extended_type_content_id = "0x261ef3741d975bbaacbd9d2c8ea73522";
+  uint8_t extended_type_content_id[16] = {
+      0x26, 0x1e, 0xf3, 0x74, 0x1d, 0x97, 0x5b, 0xba,
+      0xac, 0xbd, 0x9d, 0x2c, 0x8e, 0xa7, 0x35, 0x22};
   const char *content_id = generate_content_id();
 
   // Content Id
@@ -137,7 +140,7 @@ static void gimify(heif_context *ctx, heif_item_id primary_id) {
 
 static void write_to_heif(uint8_t *rgbData, int width, int height, string output_filename) {
   heif_context *ctx = heif_context_alloc();
-  heif_compression_format compression = heif_compression_HEVC;
+  heif_compression_format compression = heif_compression_AV1;
   heif_encoder *encoder;
   heif_image *img;
   heif_image_handle *handle;
@@ -170,7 +173,7 @@ int main(int argc, char *argv[]) {
   print_versions();
 
   const char *input_filename = "baseball.dng";
-  const char *output_filename = "out/timestamp.heif";
+  const char *output_filename = "out/gimi_baseball.avif";
   int width, height, channels;
   string colorFilterPattern;
   // ushort *rawData = get_dng_data(filename, width, height, colorFilterPattern);
