@@ -110,7 +110,7 @@ static void gimify(heif_context *ctx, heif_item_id primary_id) {
   heif_context_add_compatible_brand(ctx, 'geo1');
   heif_context_add_compatible_brand(ctx, 'unif');
 
-  // const char *extended_type_content_id = "0x261ef3741d975bbaacbd9d2c8ea73522";
+  // Extended Type (says that the data is a content ID)
   uint8_t extended_type_content_id[16] = {
       0x26, 0x1e, 0xf3, 0x74, 0x1d, 0x97, 0x5b, 0xba,
       0xac, 0xbd, 0x9d, 0x2c, 0x8e, 0xa7, 0x35, 0x22};
@@ -174,21 +174,13 @@ int main(int argc, char *argv[]) {
 
   const char *input_filename = "baseball.dng";
   const char *output_filename = "out/gimi_baseball.avif";
+
+  // Read
   int width, height, channels;
-  string colorFilterPattern;
-  // ushort *rawData = get_dng_data(filename, width, height, colorFilterPattern);
-  // cout << colorFilterPattern << endl;
-  // if (!rawData) {
-  //   cerr << "Failed to get DNG data." << endl;
-  //   return 1;
-  // }
   uint8_t *rgbData = get_rgb_image(input_filename, width, height, channels);
 
+  // Write
   write_to_heif(rgbData, width, height, output_filename);
-
-  // if (rawData) {
-  //   delete[] rawData; // Free the copied data
-  // }
 
   return 0;
 }
